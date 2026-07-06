@@ -1,0 +1,9 @@
+build/obj/
+build/*.pdb
+build/*.ilk
+build/*.idb
+build/*.iobj
+build/*.ipdb
+*.user
+*.suo
+.vs/
