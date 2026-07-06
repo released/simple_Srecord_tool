@@ -16,7 +16,7 @@ Supported workflows:
 
 ## Default Image Semantics
 
-The defaults follow the local IAP/ISP post-build examples:
+The defaults follow common IAP/ISP post-build examples:
 
 - SRecord executable: `srec_cat`
 - Output BIN suffix: `crc`, producing `<input_stem>_crc.bin` for the primary BIN-to-BIN checksum flow
@@ -144,10 +144,10 @@ Checksum bytes at the end of the 0x10000-byte image:
 
 ## Usage Example: M2A23 IAP UART APROM With Offset
 
-Reference folder:
+Reference project-relative folder:
 
 ```text
-D:\SourceCode\_Avery_M2A23\M2A23BSP_IAP_UART_APROM\SampleCode\Template\AP\Keil
+M2A23BSP_IAP_UART_APROM\SampleCode\Template\AP\Keil
 ```
 
 Relevant `checksum_config.cmd` values:
@@ -208,16 +208,18 @@ When comparing with the batch output, keep in mind that `generateChecksum.bat` w
 
 ## Additional Batch-Derived GUI Presets
 
-The following presets were derived from local projects that contain both `generateChecksum.bat` and `checksum_config.cmd` under these roots:
+The following presets were derived from BSP sample projects that contain both `generateChecksum.bat` and `checksum_config.cmd`.
+
+Covered MCU/BSP families:
 
 ```text
-D:\SourceCode\_Avery_M480
-D:\SourceCode\_Avery_M2A23
-D:\SourceCode\_Avery_M253
-D:\SourceCode\_Avery_M031
-D:\SourceCode\_Avery_NUC131
-D:\SourceCode\_Avery_NUC1262
-D:\SourceCode\_Avery_M0A21
+M480
+M2A23
+M253
+M031
+NUC131
+NUC1262
+M0A21
 ```
 
 Common GUI settings for these checksum examples:
@@ -244,30 +246,30 @@ This matters because some batch configs use `APP_SIZE` or `APROM_SIZE` for other
 
 | Reference project | Input BIN | Offset/App start | GUI Size | Checksum offset in BIN | Output BIN size |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `_Avery_M2A23\M2A23BSP_CANFD_TX_RX` | `obj\APROM_application.bin` | `0x0000` | `0x10000` | `0xFFFC` | `0x10000` |
-| `_Avery_M2A23\M2A23BSP_ISP_CAN_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x10000` | `0xFFFC` | `0x10000` |
-| `_Avery_M2A23\M2A23BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x3000` | `0x20000` | `0x1CFFC` | `0x1D000` |
-| `_Avery_M480\M480BSP_IAP_HID_20_APROM` | `obj\APROM_application.bin` | `0x10000` | `0x80000` | `0x6FFFC` | `0x70000` |
-| `_Avery_M480\M480BSP_IAP_LwIP_TCP_APROM` | `obj\APROM_application.bin` | `0x20000` | `0x80000` | `0x5FFFC` | `0x60000` |
-| `_Avery_M480\M480BSP_IAP_LwIP_webserver_APROM` | `obj\APROM_application.bin` | `0x20000` | `0x80000` | `0x5FFFC` | `0x60000` |
-| `_Avery_M480\M480BSP_IAP_XMODEM_APROM` Keil | `obj\APROM_application.bin` | `0x10000` | `0x30000` | `0x1FFFC` | `0x20000` |
-| `_Avery_M480\M480BSP_IAP_XMODEM_APROM` GCC | `Release\AP.bin` | `0x10000` | `0x30000` | `0x1FFFC` | `0x20000` |
-| `_Avery_M480\M480BSP_ISP_HID_20_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x7B000` | `0x7AFFC` | `0x7B000` |
-| `_Avery_M480\M480BSP_ISP_HID_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x76000` | `0x75FFC` | `0x76000` |
-| `_Avery_M480\M480BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1E000` | `0x1DFFC` | `0x1E000` |
-| `_Avery_M253\M253BSP_IAP_XMODEM_APROM` Keil | `obj\APROM_application.bin` | `0x4800` | `0x20000` | `0x1B7FC` | `0x1B800` |
-| `_Avery_M253\M253BSP_IAP_XMODEM_APROM` GCC | `Release\AP.bin` | `0x4800` | `0x20000` | `0x1B7FC` | `0x1B800` |
-| `_Avery_M031\M031BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x4800` | `0x1F800` | `0x1AFFC` | `0x1B000` |
-| `_Avery_M031\M031BSP_IAP_XMODEM_APROM` | `obj\APROM_application.bin` | `0x4800` | `0x1F800` | `0x1AFFC` | `0x1B000` |
-| `_Avery_M031\M031BSP_IAP_UART_APROM_DualBackup` | `obj\APROM_application.bin` | `0x4000` | `0x10000` | `0xBFFC` | `0xC000` |
-| `_Avery_M031\M031BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1E000` | `0x1DFFC` | `0x1E000` |
-| `_Avery_M031\M031BSP_ISP_XMODEM_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1C000` | `0x1BFFC` | `0x1C000` |
-| `_Avery_M031\M031BSP_FMC_IAP_IN_SRAM` | `obj\APROM_application.bin` | `0x0000` | `0xF000` | `0xEFFC` | `0xF000` |
-| `_Avery_NUC1262\NUC1262BSP_ISP_HID_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1D000` | `0x1CFFC` | `0x1D000` |
-| `_Avery_NUC131\NUC131BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0xD000` | `0xCFFC` | `0xD000` |
-| `_Avery_NUC131\NUC131BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0xE000` | `0xDFFC` | `0xE000` |
-| `_Avery_M0A21\M0A21BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x5800` | `0x57FC` | `0x5800` |
-| `_Avery_M0A21\M0A21BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x6000` | `0x5FFC` | `0x6000` |
+| `M2A23BSP_CANFD_TX_RX` | `obj\APROM_application.bin` | `0x0000` | `0x10000` | `0xFFFC` | `0x10000` |
+| `M2A23BSP_ISP_CAN_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x10000` | `0xFFFC` | `0x10000` |
+| `M2A23BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x3000` | `0x20000` | `0x1CFFC` | `0x1D000` |
+| `M480BSP_IAP_HID_20_APROM` | `obj\APROM_application.bin` | `0x10000` | `0x80000` | `0x6FFFC` | `0x70000` |
+| `M480BSP_IAP_LwIP_TCP_APROM` | `obj\APROM_application.bin` | `0x20000` | `0x80000` | `0x5FFFC` | `0x60000` |
+| `M480BSP_IAP_LwIP_webserver_APROM` | `obj\APROM_application.bin` | `0x20000` | `0x80000` | `0x5FFFC` | `0x60000` |
+| `M480BSP_IAP_XMODEM_APROM` Keil | `obj\APROM_application.bin` | `0x10000` | `0x30000` | `0x1FFFC` | `0x20000` |
+| `M480BSP_IAP_XMODEM_APROM` GCC | `Release\AP.bin` | `0x10000` | `0x30000` | `0x1FFFC` | `0x20000` |
+| `M480BSP_ISP_HID_20_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x7B000` | `0x7AFFC` | `0x7B000` |
+| `M480BSP_ISP_HID_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x76000` | `0x75FFC` | `0x76000` |
+| `M480BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1E000` | `0x1DFFC` | `0x1E000` |
+| `M253BSP_IAP_XMODEM_APROM` Keil | `obj\APROM_application.bin` | `0x4800` | `0x20000` | `0x1B7FC` | `0x1B800` |
+| `M253BSP_IAP_XMODEM_APROM` GCC | `Release\AP.bin` | `0x4800` | `0x20000` | `0x1B7FC` | `0x1B800` |
+| `M031BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x4800` | `0x1F800` | `0x1AFFC` | `0x1B000` |
+| `M031BSP_IAP_XMODEM_APROM` | `obj\APROM_application.bin` | `0x4800` | `0x1F800` | `0x1AFFC` | `0x1B000` |
+| `M031BSP_IAP_UART_APROM_DualBackup` | `obj\APROM_application.bin` | `0x4000` | `0x10000` | `0xBFFC` | `0xC000` |
+| `M031BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1E000` | `0x1DFFC` | `0x1E000` |
+| `M031BSP_ISP_XMODEM_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1C000` | `0x1BFFC` | `0x1C000` |
+| `M031BSP_FMC_IAP_IN_SRAM` | `obj\APROM_application.bin` | `0x0000` | `0xF000` | `0xEFFC` | `0xF000` |
+| `NUC1262BSP_ISP_HID_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x1D000` | `0x1CFFC` | `0x1D000` |
+| `NUC131BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0xD000` | `0xCFFC` | `0xD000` |
+| `NUC131BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0xE000` | `0xDFFC` | `0xE000` |
+| `M0A21BSP_IAP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x5800` | `0x57FC` | `0x5800` |
+| `M0A21BSP_ISP_UART_APROM` | `obj\APROM_application.bin` | `0x0000` | `0x6000` | `0x5FFC` | `0x6000` |
 
 Example command shape for the M480 LwIP APROM case:
 
