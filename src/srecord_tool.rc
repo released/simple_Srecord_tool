@@ -4,8 +4,8 @@
 IDR_MAINFRAME ICON "res\\p_tool.ico"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,9
- PRODUCTVERSION 1,0,0,9
+ FILEVERSION 1,0,0,10
+ PRODUCTVERSION 1,0,0,10
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS VS_FF_DEBUG
@@ -22,11 +22,11 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simple SRecord Tool Team\0"
             VALUE "FileDescription", "Simple SRecord Tool\0"
-            VALUE "FileVersion", "1.0.0.009\0"
+            VALUE "FileVersion", "1.0.0.010\0"
             VALUE "InternalName", "SimpleSRecordTool.exe\0"
             VALUE "OriginalFilename", "SimpleSRecordTool.exe\0"
             VALUE "ProductName", "Simple SRecord Tool\0"
-            VALUE "ProductVersion", "1.0.0.009\0"
+            VALUE "ProductVersion", "1.0.0.010\0"
         END
     END
     BLOCK "VarFileInfo"

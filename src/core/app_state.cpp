@@ -55,6 +55,14 @@ std::wstring OperationText(ConvertOperation op) {
     return L"BinToBin";
 }
 
+std::wstring FileNameOnly(const std::wstring& path) {
+    size_t pos = path.find_last_of(L"\\/");
+    if (pos == std::wstring::npos) {
+        return path;
+    }
+    return path.substr(pos + 1);
+}
+
 } // namespace
 
 AppState AppState::Default() {
@@ -77,7 +85,7 @@ AppState AppState::Default() {
 mfc_tool::config::IniData AppState::ToIniData(const std::wstring& ini_path) const {
     mfc_tool::config::IniData out;
     out[L"APP"] = {
-        {L"ini_path", ini_path}
+        {L"ini_path", FileNameOnly(ini_path)}
     };
 
     out[L"UI"] = {
