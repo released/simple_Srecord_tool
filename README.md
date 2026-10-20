@@ -2,6 +2,13 @@
 
 Standalone Windows MFC GUI for common SRecord firmware image operations.
 
+## Compiler-Only Clean
+
+`scripts/clean_mfc.bat` and the existing clean entry remove known compiler files
+only. Complete path/link preflight rejects reparse points before deletion;
+EXE/INI/DLL/data/log/evidence/unknowns are preserved even under obj/tests/verify.
+No additional manual setup is required.
+
 ## Scope
 
 The tool wraps `srec_cat` so app-code images can be converted and prepared without editing post-build batch files each time.

@@ -1,5 +1,14 @@
 # HANDOFF.md
 
+## Clean Safety Follow-up 2026-10-20
+
+- Replaced named-directory purges with a standalone compiler-file allowlist; canonical and legacy entries share the same helper and support non-destructive help.
+- PASS: shared verifier `-CleanBatch scripts/clean_mfc.bat -CleanActualProject -CheckNestedDelivery -CheckReparseRejection`: 17 fixture build sentinels plus source, help/no-deletion, object removal, repeat-clean and junction rejection before deletion.
+- PASS: 3 actual protected build files unchanged (SHA-256).
+- Application source/project resources are unchanged from verified baseline `a73b78aa6c5b8deea268c702f5e1cd6950c3767b`. The Release x64 build already passed earlier in this migration; it was not rebuilt or version-bumped just for this clean-only follow-up. This is not a new UI/hardware acceptance claim.
+- NOT RUN: new functional/device/full visual/DPI/Debug acceptance; no hardware writes or user-instance closure.
+- Final commit/publication evidence: workspace `#READ_ME_FIRST#/PROJECT_LAYOUT_MIGRATION.md`.
+
 ## Current State
 
 ### Layout audit 2026-10-20
