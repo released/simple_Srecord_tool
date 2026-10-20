@@ -14,6 +14,9 @@ This project builds a standalone Windows MFC GUI for SRecord based firmware imag
 
 ## Local Rules
 
+- Workspace directory-layout reference: `#READ_ME_FIRST#/PROJECT_LAYOUT.md`.
+- This project is the MFC directory-layout golden sample. Other tools must not copy its SRecord dependency or product-specific behavior just to match the folders.
+
 - Keep the project layout aligned with sibling simple tools:
   - `src\`
   - `scripts\`

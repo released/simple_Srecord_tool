@@ -299,6 +299,13 @@ build\SimpleSRecordTool.exe
 
 ## Files
 
+This project is the workspace MFC **directory-layout** reference:
+`src` (including resources), `scripts`, `docs`, and local `build` output.
+See workspace `#READ_ME_FIRST#/PROJECT_LAYOUT.md` for the full convention.
+
+Normal cleanup is `scripts\clean_mfc.bat`; it retains the executable, portable
+INI, and other delivery/user files. Clean is not a reset of the `build` folder.
+
 - `SimpleSRecordTool.sln` / `SimpleSRecordTool.vcxproj`: Visual Studio MFC project.
 - `src\ui\srecord_tab.*`: main GUI controls for file paths, offset, padding, checksum, command preview, and execution.
 - `src\core\srecord_command.*`: SRecord command generation and parameter validation.

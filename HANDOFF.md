@@ -2,6 +2,19 @@
 
 ## Current State
 
+### Layout audit 2026-10-20
+
+- Selected as the workspace MFC directory-layout golden sample; application
+  behavior and SRecord dependency are unchanged.
+- Build: `scripts/build_mfc.ps1 -Configuration Release -Platform x64 -CloseRunningTool $false` PASS, 0 warnings/errors.
+- Existing pre-build step legitimately generated version `1.0.0.011`, header,
+  resource, and `build/SimpleSRecordTool.exe`.
+- Isolated EXE startup/main-window/normal-close smoke: PASS, exit 0; real user INI
+  and firmware inputs were not used. Conversion/hardware/DPI tests: NOT RUN.
+- `scripts/clean_mfc.bat`: fixture/repeat-clean PASS; actual clean retained all
+  3 protected build files unchanged by SHA-256 (including EXE/INI).
+- Shared migration/publication status: `#READ_ME_FIRST#/PROJECT_LAYOUT_MIGRATION.md`.
+
 `simple_Srecord_tool` now contains a standalone MFC project named `SimpleSRecordTool`.
 
 Implemented:

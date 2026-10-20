@@ -1,5 +1,15 @@
 # SELF_CHECK.md
 
+## Layout Verification 2026-10-20
+
+- PASS: Release x64 build, 0 warnings/errors (`scripts/build_mfc.ps1`, with
+  `-CloseRunningTool $false`). Generated version: `1.0.0.011`.
+- PASS: isolated EXE startup, main-window handle, normal close and exit 0.
+- PASS: actual `scripts/clean_mfc.bat`; 3 protected build files SHA-256 unchanged.
+- PASS: isolated clean sentinels and idempotence (9 build files plus source).
+- NOT RUN: new SRecord conversions, hardware tests, exhaustive GUI/DPI review;
+  no functional code was changed for this directory-layout reference.
+
 ## Manual Check List
 
 - [ ] Build Release x64 with `scripts\build_mfc.ps1`.
