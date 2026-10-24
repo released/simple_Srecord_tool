@@ -1,5 +1,27 @@
 # HANDOFF.md
 
+## Adopted x64 size reduction 2026-10-25
+
+Canonical 1.0.0.012 GUI is 680,448 bytes; unchanged required srec_cat makes core
+delivery 2,121,230 bytes (was 4,213,774). See SELF_CHECK for exact SHA and raw
+scope/metrics. Actual formal GUI conversion/output equality, controls/dialog,
+Debug workflow, core/error fixtures and seven alternating performance pairs pass.
+Actual clean retained all 3 delivery/config hashes and removed 28 compiler files;
+nested fixtures/help/idempotence pass. Only x64 MFC registration was excluded;
+Win32, features, static runtime/optimization/security unchanged. Visual/DPI/clean-PC
+are not claimed. Shared progress records ordinary publication; pilot below is
+historical. Do not delete required srec_cat or mix console fixtures into the GUI.
+
+## Size pilot checkpoint 2026-10-24
+
+IN PROGRESS, not an adopted release. Added standard-control MFC exclusion and a
+separate console conversion regression target. Release baseline/candidate and
+Debug compile pass; actual srec_cat roundtrip/six checksum/error fixtures pass.
+Isolated GUI candidate is 680,448 bytes versus 2,772,992; required srec_cat stays.
+Formal EXE/version inputs and personal INI are unchanged. SELF_CHECK lists exact
+hashes and remaining desktop/performance/canonical-build/clean gates. Native
+Computer Use pipe is unavailable; no candidate promotion/commit/push yet.
+
 ## Clean Safety Follow-up 2026-10-20
 
 - Replaced named-directory purges with a standalone compiler-file allowlist; canonical and legacy entries share the same helper and support non-destructive help.

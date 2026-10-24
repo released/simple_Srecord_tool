@@ -1,5 +1,59 @@
 # SELF_CHECK.md
 
+## Adopted x64 size reduction 2026-10-25
+
+- Canonical Release 1.0.0.012: 680,448 bytes, SHA-256
+  `8C437059EF4F2E0F9216174479CCA48BA3C97B996FE5802FC3C2852E61A93B8B`.
+  Baseline GUI 2,772,992 bytes; unchanged required srec_cat 1,440,782 bytes.
+  Core delivery binaries 4,213,774 -> 2,121,230 bytes; no hidden/new runtime.
+  /O2 /GL /MT /GS, x64 and PE 0x8160 retained. Win32 definitions unchanged.
+- PASS canonical build_mfc.ps1 -Configuration Release -Platform x64
+  -CloseRunningTool $false (no running canonical instance); zero warnings/errors.
+  Version/resource generation is normal. Original GUI/srec_cat remain preserved.
+- PASS authorized isolated actual formal-EXE BIN -> HEX conversion, baseline/
+  formal output byte equality, identical control-class shape, owned Browse file
+  dialog open/cancel, normal exit. Debug candidate exercises conversion/dialog
+  without assertion. Separate console roundtrip/six checksum/error tests pass.
+- PASS scoped paired performance: two warmups, seven baseline calibration samples,
+  seven alternating AB/BA pairs; no concurrent compiler. Before-candidate delta
+  limits max(floor, 10% baseline median, 3*MAD); memory 5%; floors startup 25ms,
+  workflow 2ms, CPU 16ms, memory 1MiB. Medians baseline -> formal: startup
+  187.7740 -> 195.3647ms; GUI conversion 128.7977 -> 137.6756ms; process CPU
+  187.500 -> 171.875ms; peak working set 18,190,336 -> 17,723,392 bytes.
+  All within baseline-derived limits; do not describe each sample as faster.
+- Raw limits/samples: shared batch ui-pair-e9f98fc444a448cfa1052fa28fb2d5fb.
+- PASS actual clean_mfc.bat via preservation verifier: 28 compiler files removed,
+  all 3 protected actual files unchanged by SHA; 17 nested fixture files/source,
+  help/idempotence PASS. Prior unchanged junction coverage is reused.
+- NOT RUN: visual/DPI, clean-PC and Win32 builds, broad unrelated format variants.
+  No personal INI/real firmware/hardware/clipboard was used. Ordinary reviewed
+  publication and exact remote SHA are tracked in shared EXE_SLIMMING_PROGRESS.md.
+
+## Historical size pilot checkpoint 2026-10-24 — before adoption
+
+- Original formal GUI and srec_cat preserved in the shared isolated batch;
+  personal srecord_tool.ini was not used in tests. Formal output is unchanged.
+- Rebuilt Release x64 baseline: 2,772,992 bytes; SHA-256
+  `2A4C3B9BDBF5D838B1E55954948138AA586BD67002BC47BD5950A707D5BD93C3`.
+- Standard-control MFC candidate: 680,448 bytes; SHA-256
+  `2DD725F219744B72F039D50A6B6694B54DE1F9626108E9CA9A7A02AD398CFF0D`.
+  Required srec_cat remains 1,440,782 bytes: core delivery binaries total
+  4,213,774 -> 2,121,230 bytes, before unchanged settings/notices.
+- PASS: separate Release baseline/candidate and candidate Debug x64 builds;
+  /O2 /GL /MT /GS, architecture and PE 0x8160 retained; no reported compiler/linker
+  warnings/errors (existing informational _WIN32_WINNT default messages remain).
+  PreBuildEventUseInBuild=false prevents version churn in these paired trials.
+- PASS: separate tests/SizeRegression.vcxproj console target, actual unchanged
+  srec_cat, fresh fixtures: BIN/HEX roundtrip byte equality, all six checksum
+  workflows with padding/dump, invalid algorithm/fill/address overflow rejection
+  and original input preservation. No real firmware files or GUI were used.
+- NOT RUN: actual formal/candidate GUI controls/dialogs/Debug startup, paired
+  startup/UI/CPU/memory metrics, canonical build/actual clean/publication.
+  Computer Use native pipe failed retry/reset. Alternative isolated script
+  authorization requested; do not adopt or claim performance neutrality yet.
+- Shared progress/evidence: #READ_ME_FIRST#/EXE_SLIMMING_PROGRESS.md. No native
+  commit/push has been performed for this candidate.
+
 ## Clean Safety Follow-up 2026-10-20
 
 - Replaced named-directory purges with a standalone compiler-file allowlist; canonical and legacy entries share the same helper and support non-destructive help.

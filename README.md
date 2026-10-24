@@ -2,6 +2,11 @@
 
 Standalone Windows MFC GUI for common SRecord firmware image operations.
 
+Release x64 1.0.0.012 GUI is 680,448 bytes (was 2,772,992). Required srec_cat is
+retained; core delivery binaries total 2,121,230 bytes. Scoped GUI/Debug/conversion,
+paired performance and safe-clean checks pass; see SELF_CHECK.md for measurements
+and limitations. Features/static runtime and Win32 settings are unchanged.
+
 ## Compiler-Only Clean
 
 `scripts/clean_mfc.bat` and the existing clean entry remove known compiler files

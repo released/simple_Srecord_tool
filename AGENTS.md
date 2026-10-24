@@ -20,6 +20,11 @@ This project builds a standalone Windows MFC GUI for SRecord based firmware imag
 
 ## Local Rules
 
+- x64 MFC exclusion is adopted (2026-10-25) after scoped GUI/Debug/workflow,
+  paired performance and clean checks; see SELF_CHECK. Win32 is unchanged.
+- tests/SizeRegression.vcxproj is a separate console workflow check. Never link
+  it into the formal GUI or drop the required srec_cat dependency for size claims.
+
 - Workspace directory-layout reference: `#READ_ME_FIRST#/PROJECT_LAYOUT.md`.
 - This project is the MFC directory-layout golden sample. Other tools must not copy its SRecord dependency or product-specific behavior just to match the folders.
 
