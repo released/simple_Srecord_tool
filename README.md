@@ -2,17 +2,6 @@
 
 Standalone Windows MFC GUI for common SRecord firmware image operations.
 
-Release x64 1.0.0.012 GUI is 680,448 bytes (was 2,772,992). Required srec_cat is
-retained; core delivery binaries total 2,121,230 bytes. Scoped GUI/Debug/conversion,
-paired performance and safe-clean checks pass; see SELF_CHECK.md for measurements
-and limitations. Features/static runtime and Win32 settings are unchanged.
-
-## Compiler-Only Clean
-
-`scripts/clean_mfc.bat` and the existing clean entry remove known compiler files
-only. Complete path/link preflight rejects reparse points before deletion;
-EXE/INI/DLL/data/log/evidence/unknowns are preserved even under obj/tests/verify.
-No additional manual setup is required.
 
 ## Scope
 
@@ -114,7 +103,7 @@ Quick rule:
 
 ## Usage Example: M2A23 APROM Checksum BIN
 
-This example verifies the GUI output against the original batch output.
+To prepare a 0x10000-byte APROM image with a final four-byte checksum:
 
 GUI settings:
 
@@ -131,28 +120,8 @@ GUI settings:
 - Add checksum at last 4 bytes: checked
 - Algorithm: `-crc32-l-e`
 
-Reference batch output:
-
-```text
-build\__APROM_application__.bin
-```
-
-Expected verification result:
-
-```text
-APROM_original_application.bin size : 65536
-__APROM_application__.bin size      : 65536
-SHA256                              : A4713A42E4F2730580506FBFD2646E69A8E6ACAFF022ED2C45AFD122526FA890
-Binary byte compare                 : identical
-```
-
-Checksum bytes at the end of the 0x10000-byte image:
-
-```text
-0x0FFF0: FF FF FF FF FF FF FF FF FF FF FF FF 50 04 1D 18
-```
-
-`APROM_original_srecord.hex` can also be converted back to BIN with `srec_cat`; the decoded BIN should match both `APROM_original_application.bin` and `__APROM_application__.bin` byte-for-byte.
+The checksum occupies the final four bytes of the configured image. Its value
+depends on the input contents; confirm the preview addresses before conversion.
 
 ## Usage Example: M2A23 IAP UART APROM With Offset
 
@@ -311,9 +280,8 @@ build\SimpleSRecordTool.exe
 
 ## Files
 
-This project is the workspace MFC **directory-layout** reference:
-`src` (including resources), `scripts`, `docs`, and local `build` output.
-See workspace `#READ_ME_FIRST#/PROJECT_LAYOUT.md` for the full convention.
+Source and resources are in `src`, automation in `scripts`, guides in `docs`,
+and local executable/settings in `build`.
 
 Normal cleanup is `scripts\clean_mfc.bat`; it retains the executable, portable
 INI, and other delivery/user files. Clean is not a reset of the `build` folder.
