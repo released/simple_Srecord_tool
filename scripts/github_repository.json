@@ -1,0 +1,15 @@
+{
+  "publication_enabled": true,
+  "repository": "released/simple_Srecord_tool",
+  "visibility": "PUBLIC",
+  "branch": "main",
+  "readme_title": "Simple SRecord Tool",
+  "identity_files": [
+    "README.md",
+    "SimpleSRecordTool.vcxproj"
+  ],
+  "delivery_files": [
+    "build/SimpleSRecordTool.exe",
+    "build/srec_cat.exe"
+  ]
+}

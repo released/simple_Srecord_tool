@@ -164,6 +164,7 @@
     <ClInclude Include="src\ui\srecord_tab.h" />
   </ItemGroup>
 
+  <ItemGroup><ClInclude Include="src\tool_build_display.h" /><ClInclude Include="src\tool_build_identity.h" /><None Include="scripts\prepare_tool_build_identity.ps1" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

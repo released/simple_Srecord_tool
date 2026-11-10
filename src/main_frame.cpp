@@ -1,4 +1,5 @@
 #include "main_frame.h"
+#include "tool_build_identity.h"
 
 #include <afxdlgs.h>
 
@@ -59,6 +60,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     if (CFrameWnd::OnCreate(lpCreateStruct) == -1) {
         return -1;
     }
+    if (!build_identity_.Create(m_hWnd, TOOL_BUILD_VERSION_W, TOOL_BUILD_DISPLAY_TIME_W,
+                                TOOL_BUILD_TIMESTAMP_ISO_W)) return -1;
 
     ui_font_.CreatePointFont(90, L"Segoe UI");
     HICON app_icon = AfxGetApp()->LoadIconW(IDR_MAINFRAME);
@@ -137,10 +140,13 @@ void CMainFrame::LayoutControls(int cx, int cy) {
     }
 
     const int margin = 8;
+    build_identity_.SetFont(reinterpret_cast<HFONT>(ui_font_.GetSafeHandle()));
+    build_identity_.Place(cx - margin, margin, (std::max)(0, cx - margin * 2));
+    const int header_height = build_identity_.Height() + margin;
     const int gap = 6;
     const int row_h = 26;
     const int log_h = (std::max)(116, cy / 5);
-    int y = margin;
+    int y = margin + header_height;
     int x = margin;
 
     mfc_tool::ui::SafeMoveWindow(save_ini_btn_, x, y, 86, row_h);
@@ -175,6 +181,8 @@ void CMainFrame::LayoutControls(int cx, int cy) {
     rc.DeflateRect(4, 4, 4, 4);
     mfc_tool::ui::SafeMoveWindow(srecord_tab_, rc);
     srecord_tab_.ShowWindow(SW_SHOW);
+    build_info_title_.ShowWindow(SW_HIDE);
+    build_info_value_.ShowWindow(SW_HIDE);
 }
 
 void CMainFrame::AppendLog(const std::wstring& text) {
