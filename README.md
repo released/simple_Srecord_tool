@@ -12,8 +12,23 @@ Supported workflows:
 - Load `.bin`, reload it after a firmware rebuild, optionally offset/pad/add checksum, then output checksum-patched BIN with an editable output suffix.
 - Optionally generate an Intel HEX copy from the checksum-patched BIN.
 - Load `.hex`/`.ihx`, reload it after a firmware rebuild, optionally offset/pad/add checksum, then output binary.
-- Preview the exact `srec_cat` command before running it.
+- Preview the logical `srec_cat` commands before running them.
 - Show the calculated checksum position and dump the generated checksum bytes after conversion.
+
+## Execution and Output Safety
+
+1. `Convert` captures the selected paths and settings. Existing output files require replacement confirmation.
+2. The background job runs the existing `srec_cat.exe` engine without a command shell. `Convert` becomes `Cancel` while the job is active; settings changes are disabled.
+3. BIN and optional HEX results are generated into unique sibling staging files. The engine checks the staged output before publication.
+4. Each output is committed by a same-filesystem atomic rename/replacement. The log lists only files actually committed.
+
+- Source/output collisions, hard-link aliases, overlapping BIN/HEX destinations and destinations changed since confirmation are rejected.
+- The source and engine are held read-only during conversion. Closing the window requests cancellation and defers destruction until the job has finished.
+- Failure or cancellation before commit preserves existing outputs. A failure or cancellation between BIN and HEX commits is reported as partial; an already committed BIN is not rolled back.
+- A cancellation arriving after the final commit does not undo successful output.
+- Containing folders must exist. Regular files are required; reparse-point paths, device paths, alternate data streams and empty generated outputs are unsupported.
+- External programs must not modify output files during conversion. Windows has no file-identity compare-and-swap rename; the final identity check cannot exclude an external writer in the interval immediately before replacement. Network-filesystem and power-loss guarantees are not provided.
+- Command preview/clipboard text represents Windows native arguments, not an escaped batch script. Actual execution substitutes staging paths and never evaluates shell syntax or environment-variable expressions.
 
 ## Default Image Semantics
 
@@ -287,8 +302,11 @@ Normal cleanup is `scripts\clean_mfc.bat`; it retains the executable, portable
 INI, and other delivery/user files. Clean is not a reset of the `build` folder.
 
 - `SimpleSRecordTool.sln` / `SimpleSRecordTool.vcxproj`: Visual Studio MFC project.
-- `src\ui\srecord_tab.*`: main GUI controls for file paths, offset, padding, checksum, command preview, and execution.
+- `src\ui\srecord_tab.*`: GUI controls, settings snapshot, replacement confirmation, and job completion presentation.
+- `src\core\conversion_plan.*`: normalized paths, file identities, conflict checks, and logical command plan.
+- `src\core\conversion_job.*`: single background job and conversion/checksum/HEX/validation sequence.
+- `src\core\output_transaction.*`: owned sibling staging files, atomic per-file commit, and staging cleanup.
 - `src\core\srecord_command.*`: SRecord command generation and parameter validation.
-- `src\core\process_runner.*`: hidden process execution with stdout/stderr capture.
+- `src\core\process_runner.*`: native literal-argument execution, bounded stdout/stderr capture, and process-tree cancellation.
 - `scripts\build_mfc.ps1`: MSBuild wrapper matching sibling simple tools.
 - `docs\SRECORD_WORKFLOW.md`: SRecord flow notes, including the M2A23 CAN PWM LIN AP Keil example.

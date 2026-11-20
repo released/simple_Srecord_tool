@@ -1,6 +1,15 @@
 # SRecord Workflow
 
-The GUI generates `srec_cat` commands using the same high-level flow as the IAP/ISP post-build batches in the local BSP workspaces.
+The GUI generates `srec_cat` commands using the same high-level flow as the IAP/ISP post-build batches.
+
+## Execution Boundaries
+
+- The UI captures options and confirms replacement. `conversion_plan` resolves paths and checks source/output identities.
+- `conversion_job` coordinates the existing command builders and native process runner. It owns the immutable job snapshot and cancellation state, not window controls.
+- `output_transaction` creates unique sibling staging files. The engine generates and parses all selected results before any final output is replaced.
+- The command examples below show logical destination paths. Actual background execution uses staging paths, then commits BIN and HEX individually.
+- `Cancel` stops the owned process job, including descendants. Window close requests cancellation and remains asynchronous while the job finishes.
+- A successful rename is permanent for that file. A later HEX commit failure is a partial outcome, not a rollback of the BIN.
 
 ## BIN to HEX with Offset and CRC
 
@@ -45,7 +54,7 @@ The binary output is normally padded from base address `0x0000` when padding or 
 Reference folder:
 
 ```text
-D:\SourceCode\_Avery_M2A23\M2A23BSP_ISP_CAN_PWM_LIN\SampleCode\Template\AP\Keil
+M2A23BSP_ISP_CAN_PWM_LIN\SampleCode\Template\AP\Keil
 ```
 
 `checksum_config.cmd` values:

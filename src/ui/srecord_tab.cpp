@@ -7,7 +7,7 @@
 #include <cstring>
 #include <utility>
 
-#include "../core/process_runner.h"
+#include "../core/conversion_plan.h"
 #include "../core/srecord_command.h"
 #include "../core/text_utils.h"
 #include "../resource.h"
@@ -18,11 +18,13 @@ namespace {
 constexpr int kRowH = 26;
 constexpr int kGap = 6;
 constexpr int kMargin = 8;
+constexpr UINT_PTR kJobTimer = 1;
 
 } // namespace
 
 BEGIN_MESSAGE_MAP(CSRecordTab, CWnd)
     ON_WM_SIZE()
+    ON_WM_TIMER()
     ON_BN_CLICKED(ID_SREC_INPUT_BROWSE_BTN, &CSRecordTab::OnBrowseInput)
     ON_BN_CLICKED(ID_SREC_INPUT_RELOAD_BTN, &CSRecordTab::OnReloadInput)
     ON_BN_CLICKED(ID_SREC_OUTPUT_BROWSE_BTN, &CSRecordTab::OnBrowseOutput)
@@ -66,11 +68,13 @@ BOOL CSRecordTab::Create(CWnd* parent, const RECT& rect, UINT id) {
     return TRUE;
 }
 
-void CSRecordTab::Bind(LogCallback log_cb) {
+void CSRecordTab::Bind(LogCallback log_cb, std::function<void(bool)> busy_cb) {
     log_cb_ = std::move(log_cb);
+    busy_cb_ = std::move(busy_cb);
 }
 
 void CSRecordTab::LoadState(const srecord_tool::core::AppState& state) {
+    if (busy_) return;
     WriteOptions(state.srecord);
     UpdateInputInfo();
     UpdateOptionEnable();
@@ -332,26 +336,17 @@ void CSRecordTab::UpdateInputInfo() {
 }
 
 void CSRecordTab::UpdateDerivedPreview() {
-    srecord_tool::core::SRecordCommand command;
-    srecord_tool::core::SRecordCommand hex_command;
+    srecord_tool::core::ConversionPlan plan;
     std::wstring error;
     const srecord_tool::core::SRecordOptions options = ReadOptions();
-    if (!srecord_tool::core::BuildConvertCommand(options, &command, &error)) {
+    if (!srecord_tool::core::BuildConversionPlan(options, &plan, &error)) {
         SetText(derived_info_, L"Preview error: " + error);
         SetText(command_preview_, L"");
         return;
     }
 
-    SetText(derived_info_, srecord_tool::core::DescribeDerived(options, command.derived));
-    std::wstring preview = command.command_line;
-    if (options.operation == srecord_tool::core::ConvertOperation::BinToBin && options.hex_copy_enabled) {
-        if (srecord_tool::core::BuildHexCopyCommand(options, command.derived, &hex_command, &error)) {
-            preview += L"\r\n" + hex_command.command_line;
-        } else {
-            preview += L"\r\nHEX copy preview error: " + error;
-        }
-    }
-    SetText(command_preview_, preview);
+    SetText(derived_info_, srecord_tool::core::DescribeDerived(options, plan.convert.derived));
+    SetText(command_preview_, srecord_tool::core::DescribePlanCommands(plan));
 }
 
 void CSRecordTab::UpdateOptionEnable() {
@@ -392,7 +387,8 @@ void CSRecordTab::UpdateOptionEnable() {
     mfc_tool::ui::SafeEnableWindow(checksum_algo_label_, busy && checksum_check_.GetCheck() == BST_CHECKED);
     mfc_tool::ui::SafeEnableWindow(checksum_algo_combo_, busy && checksum_check_.GetCheck() == BST_CHECKED);
     mfc_tool::ui::SafeEnableWindow(reset_defaults_btn_, busy);
-    mfc_tool::ui::SafeEnableWindow(convert_btn_, busy);
+    SetText(convert_btn_, busy_ ? (close_requested_ ? L"Cancelling..." : L"Cancel") : L"Convert");
+    mfc_tool::ui::SafeEnableWindow(convert_btn_, !close_requested_);
     mfc_tool::ui::SafeEnableWindow(copy_command_btn_, busy);
     mfc_tool::ui::SafeEnableWindow(open_output_btn_, busy);
 }
@@ -549,106 +545,100 @@ void CSRecordTab::OnBrowseSrec() {
 }
 
 void CSRecordTab::OnConvert() {
-    srecord_tool::core::SRecordCommand command;
-    srecord_tool::core::ProcessResult result;
+    if (busy_) {
+        if (job_) job_->Cancel();
+        SetText(convert_btn_, L"Cancelling...");
+        convert_btn_.EnableWindow(FALSE);
+        return;
+    }
+    srecord_tool::core::ConversionPlan plan;
     std::wstring error;
-    srecord_tool::core::SRecordOptions options = ReadOptions();
-
-    if (!srecord_tool::core::BuildConvertCommand(options, &command, &error)) {
+    if (!srecord_tool::core::BuildConversionPlan(ReadOptions(), &plan, &error)) {
         ShowErrorBox(L"SRecord Command", error);
         UpdateDerivedPreview();
         return;
     }
-
     busy_ = true;
     UpdateOptionEnable();
-    Log(L"Running: " + command.command_line);
-
-    const std::wstring cwd = srecord_tool::core::DirectoryOf(options.input_path);
-    bool ok = srecord_tool::core::RunProcessCapture(command.args, cwd, &result, &error);
+    if (busy_cb_) busy_cb_(true);
+    std::wstring replacements;
+    for (size_t i = 0; i < plan.targets.size(); ++i) {
+        if (plan.target_versions[i].exists) replacements += L"\r\n" + plan.targets[i];
+    }
+    bool approved = true;
+    if (!replacements.empty()) {
+        approved = MessageBoxW((L"Replace existing output files?" + replacements).c_str(),
+                               L"Confirm Output Replacement", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2) == IDYES;
+    }
+    if (approved && !close_requested_ && srecord_tool::core::RevalidatePlan(plan, &error)) {
+        job_ = std::make_unique<srecord_tool::core::ConversionJob>();
+        if (SetTimer(kJobTimer, 50, nullptr)) {
+            Log(L"Prepared conversion:\r\n" + srecord_tool::core::DescribePlanCommands(plan));
+            if (job_->Start(std::move(plan), &error)) return;
+            KillTimer(kJobTimer);
+        } else {
+            error = L"Unable to start the completion timer; no conversion was started.";
+        }
+    }
+    job_.reset();
     busy_ = false;
+    if (busy_cb_) busy_cb_(false);
     UpdateOptionEnable();
+    if (!error.empty()) Log(error);
+    if (close_requested_) GetTopLevelFrame()->PostMessageW(WM_CLOSE);
+}
 
-    if (!ok) {
-        ShowErrorBox(L"SRecord Execute", error);
-        Log(L"Execute failed: " + error);
+bool CSRecordTab::RequestClose() {
+    if (!busy_) return false;
+    close_requested_ = true;
+    if (job_) job_->Cancel();
+    UpdateOptionEnable();
+    return true;
+}
+
+void CSRecordTab::OnTimer(UINT_PTR id) {
+    if (id != kJobTimer || !job_ || !job_->Done()) {
+        CWnd::OnTimer(id);
         return;
     }
-    if (!result.output.empty()) {
-        Log(result.output);
-    }
-    if (result.exit_code != 0) {
-        const std::wstring msg = L"srec_cat failed with exit code " + std::to_wstring(result.exit_code);
-        ShowErrorBox(L"SRecord Execute", msg);
-        Log(msg);
-        return;
-    }
-
-    Log(L"Output generated: " + options.output_path);
-    if (options.checksum_enabled) {
-        srecord_tool::core::SRecordCommand dump_command;
-        srecord_tool::core::ProcessResult dump_result;
-        if (srecord_tool::core::BuildChecksumDumpCommand(options, command.derived, &dump_command, &error)) {
-            Log(L"Checksum dump: " + dump_command.command_line);
-            if (srecord_tool::core::RunProcessCapture(dump_command.args, srecord_tool::core::DirectoryOf(options.output_path), &dump_result, &error) &&
-                dump_result.exit_code == 0) {
-                Log(dump_result.output.empty() ? L"Checksum dump is empty." : dump_result.output);
-            } else {
-                Log(L"Checksum dump failed: " + error);
-            }
-        }
-    }
-    if (options.operation == srecord_tool::core::ConvertOperation::BinToBin && options.hex_copy_enabled) {
-        srecord_tool::core::SRecordCommand hex_command;
-        srecord_tool::core::ProcessResult hex_result;
-        if (!srecord_tool::core::BuildHexCopyCommand(options, command.derived, &hex_command, &error)) {
-            ShowErrorBox(L"HEX Copy", error);
-            Log(L"HEX copy command failed: " + error);
-            return;
-        }
-        Log(L"Running HEX copy: " + hex_command.command_line);
-        if (!srecord_tool::core::RunProcessCapture(hex_command.args, srecord_tool::core::DirectoryOf(options.output_path), &hex_result, &error)) {
-            ShowErrorBox(L"HEX Copy", error);
-            Log(L"HEX copy execute failed: " + error);
-            return;
-        }
-        if (!hex_result.output.empty()) {
-            Log(hex_result.output);
-        }
-        if (hex_result.exit_code != 0) {
-            const std::wstring msg = L"HEX copy failed with exit code " + std::to_wstring(hex_result.exit_code);
-            ShowErrorBox(L"HEX Copy", msg);
-            Log(msg);
-            return;
-        }
-        Log(L"HEX copy generated: " + options.hex_output_path);
-    }
-
+    auto result = job_->TakeResult();
+    job_.reset();
+    KillTimer(kJobTimer);
+    // Completion-pending remains single-flight until this UI drain.
+    busy_ = false;
+    if (busy_cb_) busy_cb_(false);
+    UpdateOptionEnable();
+    for (const auto& message : result.messages) Log(message);
+    if (result.cleanup_incomplete) Log(L"Staging cleanup could not complete; inspect the output folder.");
+    for (const auto& path : result.committed_paths) Log(L"Output committed: " + path);
+    using srecord_tool::core::ConversionOutcome;
+    if (result.outcome == ConversionOutcome::Succeeded) Log(L"Conversion completed.");
+    else if (result.outcome == ConversionOutcome::Cancelled) Log(L"Conversion cancelled; no output committed.");
+    else if (result.outcome == ConversionOutcome::PartiallyCommitted) Log(L"Partial output commit; committed files listed above remain in place.");
+    else Log(L"Conversion failed; no output committed.");
+    if (!result.error.empty()) Log(result.error);
     UpdateInputInfo();
     UpdateDerivedPreview();
+    if (!result.error.empty()) SetText(derived_info_, result.error);
+    if (close_requested_) GetTopLevelFrame()->PostMessageW(WM_CLOSE);
 }
 
 void CSRecordTab::OnCopyCommand() {
-    srecord_tool::core::SRecordCommand command;
+    srecord_tool::core::ConversionPlan plan;
     std::wstring error;
     const srecord_tool::core::SRecordOptions options = ReadOptions();
-    if (!srecord_tool::core::BuildConvertCommand(options, &command, &error)) {
+    if (!srecord_tool::core::BuildConversionPlan(options, &plan, &error)) {
         ShowErrorBox(L"Copy Command", error);
         return;
     }
-    if (options.operation == srecord_tool::core::ConvertOperation::BinToBin && options.hex_copy_enabled) {
-        srecord_tool::core::SRecordCommand hex_command;
-        if (srecord_tool::core::BuildHexCopyCommand(options, command.derived, &hex_command, &error)) {
-            command.command_line += L"\r\n" + hex_command.command_line;
-        }
-    }
+    const std::wstring command_line = srecord_tool::core::DescribePlanCommands(plan);
 
     if (!::OpenClipboard(GetSafeHwnd())) {
         ShowErrorBox(L"Copy Command", L"OpenClipboard failed.");
         return;
     }
     EmptyClipboard();
-    const size_t bytes = (command.command_line.size() + 1u) * sizeof(wchar_t);
+    const size_t bytes = (command_line.size() + 1u) * sizeof(wchar_t);
     HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, bytes);
     if (mem == nullptr) {
         CloseClipboard();
@@ -662,7 +652,7 @@ void CSRecordTab::OnCopyCommand() {
         ShowErrorBox(L"Copy Command", L"GlobalLock failed.");
         return;
     }
-    memcpy(ptr, command.command_line.c_str(), bytes);
+    memcpy(ptr, command_line.c_str(), bytes);
     GlobalUnlock(mem);
     SetClipboardData(CF_UNICODETEXT, mem);
     CloseClipboard();

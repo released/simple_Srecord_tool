@@ -95,7 +95,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     if (!srecord_tab_.Create(&tab_ctrl_, tab_dummy, ID_TAB_SRECORD)) {
         return -1;
     }
-    srecord_tab_.Bind([this](const std::wstring& msg) { AppendLog(msg); });
+    srecord_tab_.Bind([this](const std::wstring& msg) { AppendLog(msg); }, [this](bool busy) {
+        mfc_tool::ui::SafeEnableWindow(save_ini_btn_, !busy);
+        mfc_tool::ui::SafeEnableWindow(load_ini_btn_, !busy);
+        mfc_tool::ui::SafeEnableWindow(reset_ini_btn_, !busy);
+    });
 
     CWnd* controls[] = {
         &save_ini_btn_, &load_ini_btn_, &reset_ini_btn_, &ini_path_title_, &ini_path_value_,
@@ -305,6 +309,7 @@ void CMainFrame::ShowErrorBox(const std::wstring& title, const std::wstring& mes
 }
 
 void CMainFrame::OnBnClickedSaveIni() {
+    if (srecord_tab_.IsBusy()) return;
     CFileDialog dlg(FALSE, L"ini", L"srecord_tool.ini",
                     OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
                     L"INI Files (*.ini)|*.ini|All Files (*.*)|*.*||", this);
@@ -314,6 +319,7 @@ void CMainFrame::OnBnClickedSaveIni() {
 }
 
 void CMainFrame::OnBnClickedLoadIni() {
+    if (srecord_tab_.IsBusy()) return;
     CFileDialog dlg(TRUE, L"ini", nullptr,
                     OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
                     L"INI Files (*.ini)|*.ini|All Files (*.*)|*.*||", this);
@@ -323,6 +329,7 @@ void CMainFrame::OnBnClickedLoadIni() {
 }
 
 void CMainFrame::OnBnClickedResetIni() {
+    if (srecord_tab_.IsBusy()) return;
     if (MessageBoxW(L"Reset INI settings to defaults?", L"Reset INI", MB_ICONQUESTION | MB_YESNO) != IDYES) {
         return;
     }
@@ -354,6 +361,7 @@ void CMainFrame::OnBnClickedClearLog() {
 }
 
 void CMainFrame::OnClose() {
+    if (srecord_tab_.RequestClose()) return;
     SaveIni();
     CFrameWnd::OnClose();
 }

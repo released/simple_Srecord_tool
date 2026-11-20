@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals"><ProjectGuid>{4D9384C3-BFD9-4C9A-AFF3-EA221416F47C}</ProjectGuid><WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration"><ConfigurationType>Application</ConfigurationType><PlatformToolset>v143</PlatformToolset><UseDebugLibraries>false</UseDebugLibraries><CharacterSet>Unicode</CharacterSet></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup><OutDir>$(ProjectDir)..\build\verify\execution\</OutDir><IntDir>$(ProjectDir)..\build\obj\execution\</IntDir><TargetName>ExecutionRegression</TargetName></PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile><WarningLevel>Level4</WarningLevel><SDLCheck>true</SDLCheck><RuntimeLibrary>MultiThreaded</RuntimeLibrary><LanguageStandard>stdcpp17</LanguageStandard><PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions></ClCompile>
+    <Link><SubSystem>Console</SubSystem></Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="execution_regression.cpp" />
+    <ClCompile Include="..\src\core\conversion_plan.cpp" />
+    <ClCompile Include="..\src\core\conversion_job.cpp" />
+    <ClCompile Include="..\src\core\output_transaction.cpp" />
+    <ClCompile Include="..\src\core\srecord_command.cpp" />
+    <ClCompile Include="..\src\core\process_runner.cpp" />
+    <ClCompile Include="..\src\core\text_utils.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

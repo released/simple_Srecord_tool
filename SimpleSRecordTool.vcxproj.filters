@@ -45,6 +45,9 @@
     <ClCompile Include="src\config\ini_manager.cpp"><Filter>Source Files\config</Filter></ClCompile>
     <ClCompile Include="src\core\app_state.cpp"><Filter>Source Files\core</Filter></ClCompile>
     <ClCompile Include="src\core\process_runner.cpp"><Filter>Source Files\core</Filter></ClCompile>
+    <ClCompile Include="src\core\conversion_plan.cpp"><Filter>Source Files\core</Filter></ClCompile>
+    <ClCompile Include="src\core\conversion_job.cpp"><Filter>Source Files\core</Filter></ClCompile>
+    <ClCompile Include="src\core\output_transaction.cpp"><Filter>Source Files\core</Filter></ClCompile>
     <ClCompile Include="src\core\srecord_command.cpp"><Filter>Source Files\core</Filter></ClCompile>
     <ClCompile Include="src\core\text_utils.cpp"><Filter>Source Files\core</Filter></ClCompile>
     <ClCompile Include="src\log\logger.cpp"><Filter>Source Files\log</Filter></ClCompile>
@@ -58,6 +61,9 @@
     <ClInclude Include="src\config\ini_manager.h"><Filter>Header Files\config</Filter></ClInclude>
     <ClInclude Include="src\core\app_state.h"><Filter>Header Files\core</Filter></ClInclude>
     <ClInclude Include="src\core\process_runner.h"><Filter>Header Files\core</Filter></ClInclude>
+    <ClInclude Include="src\core\conversion_plan.h"><Filter>Header Files\core</Filter></ClInclude>
+    <ClInclude Include="src\core\conversion_job.h"><Filter>Header Files\core</Filter></ClInclude>
+    <ClInclude Include="src\core\output_transaction.h"><Filter>Header Files\core</Filter></ClInclude>
     <ClInclude Include="src\core\srecord_command.h"><Filter>Header Files\core</Filter></ClInclude>
     <ClInclude Include="src\core\text_utils.h"><Filter>Header Files\core</Filter></ClInclude>
     <ClInclude Include="src\log\logger.h"><Filter>Header Files\log</Filter></ClInclude>

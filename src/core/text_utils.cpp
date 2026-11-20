@@ -154,6 +154,7 @@ std::wstring DirectoryOf(const std::wstring& path) {
     if (pos == std::wstring::npos) {
         return L"";
     }
+    if (pos == 2 && path[1] == L':') return path.substr(0, 3);
     return path.substr(0, pos);
 }
 

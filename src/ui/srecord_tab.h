@@ -4,21 +4,26 @@
 #include <afxwin.h>
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "../core/app_state.h"
+#include "../core/conversion_job.h"
 
 class CSRecordTab : public CWnd {
 public:
     using LogCallback = std::function<void(const std::wstring&)>;
 
     BOOL Create(CWnd* parent, const RECT& rect, UINT id);
-    void Bind(LogCallback log_cb);
+    void Bind(LogCallback log_cb, std::function<void(bool)> busy_cb = {});
+    bool IsBusy() const { return busy_; }
+    bool RequestClose();
     void LoadState(const srecord_tool::core::AppState& state);
     void SaveState(srecord_tool::core::AppState* state) const;
 
 protected:
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnTimer(UINT_PTR id);
     afx_msg void OnBrowseInput();
     afx_msg void OnReloadInput();
     afx_msg void OnBrowseOutput();
@@ -60,6 +65,9 @@ private:
     CFont* font_ = nullptr;
     bool created_ = false;
     bool busy_ = false;
+    bool close_requested_ = false;
+    std::unique_ptr<srecord_tool::core::ConversionJob> job_;
+    std::function<void(bool)> busy_cb_;
     LogCallback log_cb_;
 
     CStatic input_label_;

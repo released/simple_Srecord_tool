@@ -139,6 +139,9 @@
     <ClCompile Include="src\config\ini_manager.cpp" />
     <ClCompile Include="src\core\app_state.cpp" />
     <ClCompile Include="src\core\process_runner.cpp" />
+    <ClCompile Include="src\core\conversion_plan.cpp" />
+    <ClCompile Include="src\core\conversion_job.cpp" />
+    <ClCompile Include="src\core\output_transaction.cpp" />
     <ClCompile Include="src\core\srecord_command.cpp" />
     <ClCompile Include="src\core\text_utils.cpp" />
     <ClCompile Include="src\log\logger.cpp" />
@@ -157,6 +160,9 @@
     <ClInclude Include="src\config\ini_manager.h" />
     <ClInclude Include="src\core\app_state.h" />
     <ClInclude Include="src\core\process_runner.h" />
+    <ClInclude Include="src\core\conversion_plan.h" />
+    <ClInclude Include="src\core\conversion_job.h" />
+    <ClInclude Include="src\core\output_transaction.h" />
     <ClInclude Include="src\core\srecord_command.h" />
     <ClInclude Include="src\core\text_utils.h" />
     <ClInclude Include="src\log\logger.h" />
